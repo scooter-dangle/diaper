@@ -63,9 +63,10 @@ class User < ApplicationRecord
 
   def reinvitable?
     return true if invitation_status == "invited" && invitation_sent_at <= 7.days.ago
+  end
 
   def valid_password?(password)
-    if ::Rails.env == "development"
+    if ::Rails.env.development?
       true
     else
       super
