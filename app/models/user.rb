@@ -66,7 +66,7 @@ class User < ApplicationRecord
   end
 
   def valid_password?(password)
-    if ::Rails.env.development?
+    if ::Rails.env == "development"
       true
     else
       super
