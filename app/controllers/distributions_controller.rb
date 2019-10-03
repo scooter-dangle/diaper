@@ -5,6 +5,7 @@
 # might want if they were doing direct services.
 class DistributionsController < ApplicationController
   include DateRangeHelper
+  include Dateable
   rescue_from Errors::InsufficientAllotment, with: :insufficient_amount!
 
   def print
@@ -36,7 +37,7 @@ class DistributionsController < ApplicationController
 
     @distributions = current_organization
                      .distributions
-                     .where(issued_at: selected_range)
+                     .where(issued_at: date_range)
                      .includes(:partner, :storage_location, :line_items, :items)
                      .order(created_at: :desc)
                      .class_filter(filter_params)
@@ -44,6 +45,8 @@ class DistributionsController < ApplicationController
     @total_items_all_distributions = total_items(@distributions)
     @items = current_organization.items.alphabetized
     @partners = @distributions.collect(&:partner).uniq.sort
+    @date_from = date_params[:date_from]
+    @date_to = date_params[:date_to]
   end
 
   def create
