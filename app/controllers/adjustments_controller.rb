@@ -2,11 +2,16 @@
 class AdjustmentsController < ApplicationController
   # GET /adjustments
   # GET /adjustments.json
+
+  include Dateable
+
   def index
     @selected_location = filter_params[:at_location]
     @adjustments = current_organization.adjustments.class_filter(filter_params)
 
     @storage_locations = Adjustment.storage_locations_adjusted_for(current_organization).uniq
+    @date_from = date_params[:date_from]
+    @date_to = date_params[:date_to]
   end
 
   # GET /adjustments/1
