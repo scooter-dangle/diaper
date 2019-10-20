@@ -152,52 +152,52 @@ The following is a list of terms found throughout this application along with th
 
 If the term's plural form is irregular, it will also be included.
 
-[#adjustment]: DBA: **Adjustment**; model: `Adjustment`<br>
-  When a diaper bank has to make a change to its on hand inventory totals, it creates an Adjustment. A single Adjustment can record the change of quantities for multiple different kinds of Items. These adjustments create a record internally for each transaction and are the only interface for an Organization to make direct changes to their inventories. They are internally modeled as `Adjustment`.
+<a name="adjustment">DBA: **Adjustment**; model: `Adjustment`<br>
+  When a diaper bank has to make a change to its on hand inventory totals, it creates an Adjustment. A single Adjustment can record the change of quantities for multiple different kinds of Items. These adjustments create a record internally for each transaction and are the only interface for an Organization to make direct changes to their inventories.
 
-[#canonical-item]: DBA: **Canonical Item**<br>
+<a name="canonical-item">DBA: **Canonical Item**<br>
   This is the abstract base type for an `Item` object, and is used as the source of replication when a new Organization is created. Every `Item` must inherit from a Canonical Item. Canonical items create an implicit common language that can be used across both DiaperBase and PartnerBase.
 
-[#diaper-drive]: DBA: **Diaper Drive**; model: `DiaperDriveParticipant`<br>
+<a name="diaper-drive">DBA: **Diaper Drive**; model: `DiaperDriveParticipant`<br>
 NDBN: **diaper drive**
-  This is similar to a fundraiser or food drive. It is an often advertised campaign to the community with a declared intention to encourage donations from community members. Sometimes the Diaper Drive is held by individuals or organizations that are not the diaper bank themselves. Diaper banks like to track data on how successful their diaperdrives are, so we provide a means to track it. Internally, this is represented by the `DiaperDriveParticipant` model.
+  This is similar to a fundraiser or food drive. It is an often advertised campaign to the community with a declared intention to encourage donations from community members. Sometimes the Diaper Drive is held by individuals or organizations that are not the diaper bank themselves. Diaper banks like to track data on how successful their diaperdrives are, so we provide a means to track it.
 
-[#distribution]: DBA: **Distribution**<br>
+<a name="distribution">DBA: **Distribution**<br>
   These are how diaper banks issue inventory to community partners. A Distribution can sometimes be connected with a Request from PartnerBase, but this isn't strictly required. The Distribution builds a manifest of items and quantities and ultimately handles the removal of inventory in a transaction. It's the primary interface for reducing inventory.
 
-[#donation]: DBA: **Donation**; model: `Donation`<br>
+<a name="donation">DBA: **Donation**; model: `Donation`<br>
   This is one of the two ways that inventory is added to a diaper bank. Donations are inventory that is provided at no cost to the diaper bank. Internally, they are represented by the `Donation` model. These models are the primary interface for adding inventory to a diaper bank. When a Donation completes, it creates a transaction to add the inventory.
 
-[#donation-site]: DBA: **Donation Site**; model: `DonationSite`<br>
-  These are physical locations where the general public can bring needed inventory to be donated to the diaper bank. They have a geographical address and are generally named. Internally, they are represented by the `DonationSite` model.
+<a name="donation-site">DBA: **Donation Site**; model: `DonationSite`<br>
+  These are physical locations where the general public can bring needed inventory to be donated to the diaper bank. They have a geographical address and are generally named.
 
-[#inventory-item]: DBA: **Inventory Item**; model: `InventoryItem`<br>
+<a name="inventory-item">DBA: **Inventory Item**; model: `InventoryItem`<br>
   This is an abstract "box" that records an item type with a quantity, and is generally held by a Storage Location. (See also: [Line Item](#line-item))
 
-[#items]: DBA: **Item**; model: `Item`<br>
+<a name="items">DBA: **Item**; model: `Item`<br>
   The data abstraction of a real-world object. An instance of `Item` is owned by an Organization. An Item does not have a quantity itself; the quantity is tracked in an associative record (such as [`Line Item`](#line-item) or [`Inventory Item`](#inventory-item)).
 
-[#line-item]: DBA: **Line Item**; model: `LineItem`<br>
+<a name="line-item">DBA: **Line Item**; model: `LineItem`<br>
   This is an abstract "box" that records an item type with a quantity, and is generally held by a model that is transporting inventory through the flow of the system. (See also: [Inventory Item](#inventory-item))
 
-[#organization]: DBA: **Organization**; model: `Organization`<br>
+<a name="organization">DBA: **Organization**; model: `Organization`<br>
 NDBN: **diaper bank**<br>
   The software abstraction of a diaper bank, and used interchangeably as a term.
 
-[#partner]: DBA: **Partner**<br>
+<a name="partner">DBA: **Partner**<br>
 NDBN: **Community Partner**, **Partner Organization**<br>
   An individual or Organization in the surrounding community that works directly with the families, tracks their data, and schedules distributions of diapers and sanitary supplies. Partners Request disbursements of inventory from a diaper bank, the diaper bank fulfills those requests, and then the Partner provides them to the families.
 
-[#purchase]: DBA: **Purchase**; model: `Purchase`<br>
+<a name="purchase">DBA: **Purchase**; model: `Purchase`<br>
   This is inventory that was purchased for cash by the diaper bank directly. We track these so that the diaper banks can report how much money they spent directly on inventory.
 
-[#request]: DBA: **Request**; model: `Request`<br>
+<a name="request">DBA: **Request**; model: `Request`<br>
   Requests are initially created by the PartnerBase application and are sent via an API. When they are received by DiaperBase, they are tracked internally and are transformed into distributions.
 
-[#storage-location]: DBA: **Storage Location**; model: `StorageLocation`<br>
+<a name="storage-location">DBA: **Storage Location**; model: `StorageLocation`<br>
   This is a warehouse of physical inventory, though they can be as small as someone's closet/storage room in their apartment to as big as an actual building. Storage locations are unique to each Organization and are not shared across organizations.
 
-[#transfer]: DBA: **Transfer**; model: `Transfer`<br>
+<a name="transfer">DBA: **Transfer**; model: `Transfer`<br>
   This is a transactional object created to track the movement of inventory from one Storage Location to another, and to leave a paper trail behind.
 
 ### PartnerBase
