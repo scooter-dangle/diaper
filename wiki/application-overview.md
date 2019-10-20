@@ -42,7 +42,7 @@ Before we delve into the inner-workings of how this application functions, we'll
 
 A diaper bank will acquire inventory primarily through one of two methods: a [**Donation**](#donation) or a [**Purchase**](#purchase). Purchases are straightforward; the diaper bank spends its own money to Purchase inventory. Donations can be received through a few different means.
 
-[**Diaper drives**](#diaper-drive) are like food drives &emdash; a campaign, typically with advertisement to the community, for the general public to provide needed Items to the diaper bank. Sometimes people will also donate inventory at a local Donation Site, outside of a Diaper Drive. Other than those two primary methods, there is a miscellaneous classification for diapers that are received (but not purchased) through other means.
+[**Diaper drives**](#diaper-drive) are like food drives &mdash; a campaign, typically with advertisement to the community, for the general public to provide needed Items to the diaper bank. Sometimes people will also donate inventory at a local Donation Site, outside of a Diaper Drive. Other than those two primary methods, there is a miscellaneous classification for diapers that are received (but not purchased) through other means.
 
 Donations can also dropped off at [**Donation sites**](#donation-site). These are locations that have been designated as places where people can drop off donations.
 
@@ -60,7 +60,7 @@ When a diaper bank wants to move inventory from one Storage Location to another,
 
 #### Output
 
-When inventory leaves a diaper bank, it does so via a [**Distribution**](#distribution). These are either created implicitly from inbound PartnerBase [**requests**](#request), or created explicitly via the menu interface. When they are created explicitly, they pull from a single designated Storage Location, and are built in a similar fashion to donations, adjustments, transfers, etc. &emdash; Items are added and quantities are specified.
+When inventory leaves a diaper bank, it does so via a [**Distribution**](#distribution). These are either created implicitly from inbound PartnerBase [**requests**](#request), or created explicitly via the menu interface. When they are created explicitly, they pull from a single designated Storage Location, and are built in a similar fashion to donations, adjustments, transfers, etc. &mdash; Items are added and quantities are specified.
 
 Distributions can be exported as PDFs, which diaper banks can use as printable manifests for the packages sent to the Community Partner.
 
@@ -82,9 +82,9 @@ Every Organization has a user who is the "Organization admin" (typically the fir
 
 ### Items
 
-These are an important, but perhaps not immediately intuitive, aspect of the application. Items are, for example, "3T Diapers", "Baby Wipes", or "Boys Batman 4T Diapers" &emdash; they can be as generic or as specific as necessary, and organizations have full control over what Items they use in their instance of DiaperBase.
+These are an important, but perhaps not immediately intuitive, aspect of the application. Items are, for example, "3T Diapers", "Baby Wipes", or "Boys Batman 4T Diapers" &mdash; they can be as generic or as specific as necessary, and organizations have full control over what Items they use in their instance of DiaperBase.
 
-Every Item is also connected with a [**Canonical Item**](#canonical-item), which might also be called a "Base Item" (this might be a permanent name change in the near future). The Canonical Items are all very generic and refer to a functional commonality &emdash; "3T Diapers", "Huggies 3T Diapers", and "Boys Batman 3T Diapers" would all have "3T Diapers" as their Canonical Item base.
+Every Item is also connected with a [**Canonical Item**](#canonical-item), which might also be called a "Base Item" (this might be a permanent name change in the near future). The Canonical Items are all very generic and refer to a functional commonality &mdash; "3T Diapers", "Huggies 3T Diapers", and "Boys Batman 3T Diapers" would all have "3T Diapers" as their Canonical Item base.
 
 For a much more detailed and technical description of how these work, see the Wiki article on [Canonical Items](/rubyforgood/diaper/wiki/Canonical-Items).
 
@@ -108,7 +108,7 @@ Inventory Items are similar to Line Items in their function, except it might be 
 
 ### Barcoding
 
-One of the reasons that DiaperBase was built was specifically to offer the ability to expedite inventory tracking with barcodes. If you aren't familiar with the physical concept of how barcodes function, read up on [Code 39](https://en.wikipedia.org/wiki/Code_39) specifically &emdash; this allows us to encode letters and/or numbers into machine readable barcodes.
+One of the reasons that DiaperBase was built was specifically to offer the ability to expedite inventory tracking with barcodes. If you aren't familiar with the physical concept of how barcodes function, read up on [Code 39](https://en.wikipedia.org/wiki/Code_39) specifically &mdash; this allows us to encode letters and/or numbers into machine readable barcodes.
 
 The TL;DR is that the barcode stripes correspond with actual letters and numbers, and when the barcode reader reads it, it just converts it into the alphanumeric version and appends a carriage return.
 
@@ -159,7 +159,7 @@ If the term's plural form is irregular, it will also be included.
   This is the abstract base type for an `Item` object, and is used as the source of replication when a new Organization is created. Every `Item` must inherit from a Canonical Item. Canonical items create an implicit common language that can be used across both DiaperBase and PartnerBase.
 
 <a name="diaper-drive">DBA: **Diaper Drive**; model: `DiaperDriveParticipant`<br>
-NDBN: **diaper drive**
+NDBN: **diaper drive**<br>
   This is similar to a fundraiser or food drive. It is an often advertised campaign to the community with a declared intention to encourage donations from community members. Sometimes the Diaper Drive is held by individuals or organizations that are not the diaper bank themselves. Diaper banks like to track data on how successful their diaperdrives are, so we provide a means to track it.
 
 <a name="distribution">DBA: **Distribution**<br>
