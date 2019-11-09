@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     get :dashboard
     resources :base_items
     resources :organizations
+    resources :partners, except: %i[new create destroy]
     resources :users
     resources :barcode_items
     resources :feedback_messages do
@@ -127,6 +128,7 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :diaper_drives
     resources :donations do
       # collection do
       #   get :scale

@@ -3,12 +3,12 @@
 # Table name: adjustments
 #
 #  id                  :integer          not null, primary key
-#  organization_id     :integer
-#  storage_location_id :integer
 #  comment             :text
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  user_id             :integer
+#  organization_id     :integer
+#  storage_location_id :integer
+#  user_id             :bigint
 #
 
 class Adjustment < ApplicationRecord
@@ -24,6 +24,7 @@ class Adjustment < ApplicationRecord
     where(organization: organization)
       .includes(:storage_location, :line_items)
   }
+  scope :during, ->(range) { where(adjustments: { created_at: range }) }
 
   validates :storage_location, :organization, presence: true
   validate :negative_line_item_items_exist_in_inventory

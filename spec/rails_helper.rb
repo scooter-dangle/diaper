@@ -35,14 +35,21 @@ Dir[Rails.root.join("spec/controllers/shared_examples/*.rb")].each { |f| require
 
 # Checks for pending migration and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
-ActiveRecord::Migration.maintain_test_schema!
+
+# As of Raild 6 upgrade, this causes an error:
+# PG::ConnectionBad:
+#  connection is closed
+# Likely due to some changed order of operations
+# ActiveRecord::Migration.maintain_test_schema!
 
 # If an element is hidden, Capybara should ignore it
 Capybara.ignore_hidden_elements = true
 
 # https://docs.travis-ci.com/user/chrome
 Capybara.register_driver :chrome do |app|
-  options = Selenium::WebDriver::Chrome::Options.new(args: %w[no-sandbox headless disable-gpu window-size=1680,1050])
+  args = %w[no-sandbox disable-gpu window-size=1680,1050]
+  args << "headless" unless ENV["NOT_HEADLESS"] == "true"
+  options = Selenium::WebDriver::Chrome::Options.new(args: args)
 
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
@@ -104,6 +111,9 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :helper
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Devise::Test::IntegrationHelpers, type: :system
+
+  config.include ActiveSupport::Testing::TimeHelpers, type: :system
+  config.include ActiveSupport::Testing::TimeHelpers, type: :feature
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false

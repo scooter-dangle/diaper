@@ -2,18 +2,19 @@
 #
 # Table name: donations
 #
-#  id                          :integer          not null, primary key
-#  source                      :string
-#  donation_site_id            :integer
-#  created_at                  :datetime         not null
-#  updated_at                  :datetime         not null
-#  storage_location_id         :integer
+#  id                          :bigint           not null, primary key
 #  comment                     :text
-#  organization_id             :integer
-#  diaper_drive_participant_id :integer
 #  issued_at                   :datetime
 #  money_raised                :integer
-#  manufacturer_id             :bigint(8)
+#  source                      :string
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  diaper_drive_id             :bigint
+#  diaper_drive_participant_id :integer
+#  donation_site_id            :bigint
+#  manufacturer_id             :bigint
+#  organization_id             :integer
+#  storage_location_id         :bigint
 #
 
 class Donation < ApplicationRecord
@@ -26,6 +27,7 @@ class Donation < ApplicationRecord
 
   belongs_to :donation_site, optional: true # Validation is conditionally handled below.
   belongs_to :diaper_drive_participant, optional: proc { |d| d.from_diaper_drive? } # Validation is conditionally handled below.
+  belongs_to :diaper_drive, optional: true
   belongs_to :manufacturer, optional: proc { |d| d.from_manufacturer? } # Validation is conditionally handled below.
   belongs_to :storage_location
   include Itemizable

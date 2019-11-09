@@ -1,7 +1,14 @@
 # Provides partial CRUD for managing Transfers, which move inventory from one storage location to another
 class TransfersController < ApplicationController
   def index
-    @transfers = current_organization.transfers.includes(:line_items).includes(:from).includes(:to).class_filter(filter_params)
+    setup_date_range_picker
+
+    @transfers = current_organization.transfers
+                                     .includes(:line_items)
+                                     .includes(:from)
+                                     .includes(:to)
+                                     .class_filter(filter_params)
+                                     .during(helpers.selected_range)
     @selected_from = filter_params[:from_location]
     @selected_to = filter_params[:to_location]
     @from_storage_locations = Transfer.storage_locations_transferred_from_in(current_organization)

@@ -2,13 +2,13 @@
 #
 # Table name: transfers
 #
-#  id              :integer          not null, primary key
-#  from_id         :integer
-#  to_id           :integer
+#  id              :bigint           not null, primary key
 #  comment         :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
+#  from_id         :integer
 #  organization_id :integer
+#  to_id           :integer
 #
 
 class Transfer < ApplicationRecord
@@ -26,6 +26,7 @@ class Transfer < ApplicationRecord
     where(organization: organization)
       .includes(:line_items, :from, :to)
   }
+  scope :during, ->(range) { where(created_at: range) }
 
   def self.storage_locations_transferred_to_in(organization)
     includes(:to).where(organization_id: organization.id).distinct(:to_id).collect(&:to).uniq.sort_by(&:name)

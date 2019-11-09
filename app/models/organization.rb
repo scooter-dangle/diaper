@@ -2,23 +2,23 @@
 #
 # Table name: organizations
 #
-#  id              :integer          not null, primary key
-#  name            :string
-#  short_name      :string
-#  email           :string
-#  url             :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  intake_location :integer
-#  street          :string
+#  id              :bigint           not null, primary key
 #  city            :string
-#  state           :string
-#  zipcode         :string
+#  deadline_day    :integer
+#  email           :string
+#  intake_location :integer
+#  invitation_text :text
 #  latitude        :float
 #  longitude       :float
+#  name            :string
 #  reminder_day    :integer
-#  deadline_day    :integer
-#  invitation_text :text
+#  short_name      :string
+#  state           :string
+#  street          :string
+#  url             :string
+#  zipcode         :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 
 class Organization < ApplicationRecord
@@ -186,7 +186,7 @@ class Organization < ApplicationRecord
   def correct_logo_mime_type
     if logo.attached? && !logo.content_type
                               .in?(%w(image/jpeg image/jpg image/pjpeg image/png image/x-png))
-      logo.purge
+      self.logo = nil
       errors.add(:logo, "Must be a JPG or a PNG file")
     end
   end

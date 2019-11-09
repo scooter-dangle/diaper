@@ -22,6 +22,7 @@
 //= require moment
 //= require fullcalendar
 //= require quagga
+//= require daterangepicker
 //= require_tree .
 
 

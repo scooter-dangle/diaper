@@ -2,15 +2,15 @@
 #
 # Table name: requests
 #
-#  id              :bigint(8)        not null, primary key
-#  partner_id      :bigint(8)
-#  organization_id :bigint(8)
-#  request_items   :jsonb
+#  id              :bigint           not null, primary key
 #  comments        :text
+#  request_items   :jsonb
+#  status          :integer          default("pending")
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  distribution_id :integer
-#  status          :integer          default("pending")
+#  organization_id :bigint
+#  partner_id      :bigint
 #
 
 class Request < ApplicationRecord
@@ -20,6 +20,8 @@ class Request < ApplicationRecord
   belongs_to :distribution, optional: true
 
   enum status: { pending: 0, started: 1, fulfilled: 2 }, _prefix: true
+
+  scope :during, ->(range) { where(created_at: range) }
 
   def family_request_reply
     {

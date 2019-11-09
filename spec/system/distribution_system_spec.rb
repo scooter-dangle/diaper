@@ -45,6 +45,30 @@ RSpec.feature "Distributions", type: :system do
         expect(page).to have_selector "#distribution_line_items"
       end
     end
+
+    context "when there is insufficient inventory to fulfill the Distribution" do
+      it "gracefully handles the error" do
+        visit @url_prefix + "/distributions/new"
+
+        select @partner.name, from: "Partner"
+        select @storage_location.name, from: "From storage location"
+
+        fill_in "Comment", with: "Take my wipes... please"
+
+        item = @storage_location.inventory_items.first.item
+        quantity = @storage_location.inventory_items.first.quantity
+        select item.name, from: "distribution_line_items_attributes_0_item_id"
+        fill_in "distribution_line_items_attributes_0_quantity", with: quantity * 2
+
+        expect do
+          click_button "Save", match: :first
+          page.find('.alert')
+        end.not_to change { Distribution.count }
+
+        expect(page).to have_content("New Distribution")
+        expect(page.find(".alert")).to have_content "exceed"
+      end
+    end
   end
 
   it "Does not include inactive items in the line item fields" do
@@ -70,7 +94,8 @@ RSpec.feature "Distributions", type: :system do
     select "", from: "From storage location"
 
     click_button "Save", match: :first
-    expect(page).to have_content "An error occurred, try again?"
+    page.find('.alert')
+    expect(page).to have_css('.alert.error', text: /storage location/i)
   end
 
   context "With an existing distribution" do
@@ -108,7 +133,7 @@ RSpec.feature "Distributions", type: :system do
         fill_in 'distribution_line_items_attributes_0_quantity', with: distribution.line_items.first.quantity + 300
         click_on "Save", match: :first
       end.not_to change { distribution.line_items.first.quantity }
-      expect(page).to have_content "Insufficient Supply"
+      expect(page).to have_content "Distribution could not be updated!"
     end
 
     it "the user can reclaim it" do
@@ -244,8 +269,7 @@ RSpec.feature "Distributions", type: :system do
           click_on "Save"
         end
         expect(page).to have_no_content "Distribution updated!"
-        # NOTE: This is rendering the app/views/errors/insufficient.html.erb template
-        expect(page).to have_content(/Insufficient/i)
+        expect(page).to have_content(/Distribution could not be updated/i)
         expect(page).to have_no_content 999_999
         expect(Distribution.first.line_items.count).to eq 1
       end
@@ -327,6 +351,7 @@ RSpec.feature "Distributions", type: :system do
   end
 
   context "when filtering on the index page" do
+    subject { @url_prefix + "/distributions" }
     let(:item1)    { create(:item, name: "Good item") }
     let(:item2)    { create(:item, name: "Crap item") }
     let(:partner1) { create(:partner, name: "This Guy", email: "thisguy@example.com") }
@@ -336,40 +361,30 @@ RSpec.feature "Distributions", type: :system do
       create(:distribution, :with_items, item: item1)
       create(:distribution, :with_items, item: item2)
 
-      visit @url_prefix + "/distributions"
+      visit subject
       # check for all distributions
-      expect(page).to have_css("table tbody tr", count: 3)
+      expect(page).to have_css("table tbody tr", count: 2)
       # filter
       select(item1.name, from: "filters_by_item_id")
       click_button("Filter")
       # check for filtered distributions
-      expect(page).to have_css("table tbody tr", count: 2)
+      expect(page).to have_css("table tbody tr", count: 1)
     end
 
     it "filters by partner" do
       create(:distribution, partner: partner1)
       create(:distribution, partner: partner2)
 
-      visit @url_prefix + "/distributions"
+      visit subject
       # check for all distributions
-      expect(page).to have_css("table tbody tr", count: 3)
+      expect(page).to have_css("table tbody tr", count: 2)
       # filter
       select(partner1.name, from: "filters_by_partner")
       click_button("Filter")
       # check for filtered distributions
-      expect(page).to have_css("table tbody tr", count: 2)
+      expect(page).to have_css("table tbody tr", count: 1)
     end
 
-    it "Filters by date" do
-      create(:distribution, issued_at: Time.zone.today)
-      create(:distribution, issued_at: Time.zone.today)
-      create(:distribution, issued_at: Time.zone.today + 2.weeks)
-      visit @url_prefix + "/distributions"
-
-      expect(page).to have_css("table tbody tr", count: 4)
-      select("This Week", from: "filters_interval")
-      click_button "Filter"
-      expect(page).to have_css("table tbody tr", count: 3)
-    end
+    it_behaves_like "Date Range Picker", Distribution, :issued_at
   end
 end

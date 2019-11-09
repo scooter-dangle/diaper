@@ -107,7 +107,7 @@ RSpec.describe "Dashboard", type: :system, js: true do
               expect(page).to have_content("333")
             end
 
-            page.select "Last Year", from: "filters_interval"
+            date_range_picker_select_range "Last Month"
 
             within "#summary" do
               expect(page).to have_content("333")
@@ -163,7 +163,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Year" do
             before do
-              page.select "This Year", from: "filters_interval"
+              date_range_picker_select_range "This Year"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum }
@@ -183,7 +184,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Today" do
             before do
-              page.select "Today", from: "filters_interval"
+              date_range_picker_select_range "Today"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -203,7 +205,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Yesterday" do
             before do
-              page.select "Yesterday", from: "filters_interval"
+              date_range_picker_select_range "Yesterday"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:yesterday].total_quantity }
@@ -223,7 +226,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Week" do
             before do
-              page.select "This Week", from: "filters_interval"
+              date_range_picker_select_range "Last 7 Days"
+              click_on "Filter"
             end
 
             let(:total_inventory) { [@this_years_donations[:today], @this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
@@ -243,7 +247,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Month" do
             before do
-              page.select "This Month", from: "filters_interval"
+              date_range_picker_select_range "This Month"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -261,49 +266,10 @@ RSpec.describe "Dashboard", type: :system, js: true do
             end
           end
 
-          describe "Last Month" do
-            before do
-              page.select "Last Month", from: "filters_interval"
-            end
-
-            let(:total_inventory) { [@this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
-
-            it "has a widget displaying the Donation totals from last month, only using donations from last month" do
-              within "#donations" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays some recent donations" do
-              within "#donations" do
-                expect(page).to have_css("a", text: /10\d items/i, count: 2)
-              end
-            end
-          end
-
-          describe "Last Year" do
-            before do
-              page.select "Last Year", from: "filters_interval"
-            end
-
-            let(:total_inventory) { @last_years_donations.map(&:total_quantity).sum }
-
-            it "has a widget displaying the Donation totals from last year, only using donations from last year" do
-              within "#donations" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays some recent donations from that time" do
-              within "#donations" do
-                expect(page).to have_css("a", text: /10\d items/i, count: 2)
-              end
-            end
-          end
-
           describe "All Time" do
             before do
-              page.select "All Time", from: "filters_interval"
+              date_range_picker_select_range "All Time"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum + @last_years_donations.map(&:total_quantity).sum }
@@ -370,7 +336,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Year" do
             before do
-              page.select "This Year", from: "filters_interval"
+              date_range_picker_select_range "This Year"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_purchases.values.map(&:total_quantity).sum }
@@ -390,7 +357,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Today" do
             before do
-              page.select "Today", from: "filters_interval"
+              date_range_picker_select_range "Today"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_purchases[:today].total_quantity }
@@ -410,7 +378,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Yesterday" do
             before do
-              page.select "Yesterday", from: "filters_interval"
+              date_range_picker_select_range "Yesterday"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_purchases[:yesterday].total_quantity }
@@ -430,7 +399,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Week" do
             before do
-              page.select "This Week", from: "filters_interval"
+              date_range_picker_select_range "Last 7 Days"
+              click_on "Filter"
             end
 
             let(:total_inventory) { [@this_years_purchases[:today], @this_years_purchases[:yesterday], @this_years_purchases[:earlier_this_week]].map(&:total_quantity).sum }
@@ -450,7 +420,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Month" do
             before do
-              page.select "This Month", from: "filters_interval"
+              date_range_picker_select_range "This Month"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_purchases[:today].total_quantity }
@@ -468,49 +439,10 @@ RSpec.describe "Dashboard", type: :system, js: true do
             end
           end
 
-          describe "Last Month" do
-            before do
-              page.select "Last Month", from: "filters_interval"
-            end
-
-            let(:total_inventory) { [@this_years_purchases[:yesterday], @this_years_purchases[:earlier_this_week]].map(&:total_quantity).sum }
-
-            it "has a widget displaying the Purchase totals from last month, only using purchases from last month" do
-              within "#purchases" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays some recent purchases" do
-              within "#purchases" do
-                expect(page).to have_css("a", text: /10\d items/i, count: 2)
-              end
-            end
-          end
-
-          describe "Last Year" do
-            before do
-              page.select "Last Year", from: "filters_interval"
-            end
-
-            let(:total_inventory) { @last_years_purchases.map(&:total_quantity).sum }
-
-            it "has a widget displaying the Purchase totals from last year, only using purchases from last year" do
-              within "#purchases" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays some recent purchases from that time" do
-              within "#purchases" do
-                expect(page).to have_css("a", text: /10\d items/i, count: 2)
-              end
-            end
-          end
-
           describe "All Time" do
             before do
-              page.select "All Time", from: "filters_interval"
+              date_range_picker_select_range "All Time"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_purchases.values.map(&:total_quantity).sum + @last_years_purchases.map(&:total_quantity).sum }
@@ -562,7 +494,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Year" do
             before do
-              page.select "This Year", from: "filters_interval"
+              date_range_picker_select_range "This Year"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum }
@@ -583,7 +516,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Today" do
             before do
-              page.select "Today", from: "filters_interval"
+              date_range_picker_select_range "Today"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -604,14 +538,15 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Yesterday" do
             before do
-              page.select "Yesterday", from: "filters_interval"
+              date_range_picker_select_range "Yesterday"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:yesterday].total_quantity }
 
             it "has a widget displaying the Diaper drive totals from yesterday, only using donations from yesterday" do
               within "#diaper_drives" do
-                expect(page).to have_content(/1 diaper drive/i)
+                expect(page).to have_content(/1 diaper drive participant/i)
                 expect(page).to have_content(total_inventory)
               end
             end
@@ -625,7 +560,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Week" do
             before do
-              page.select "This Week", from: "filters_interval"
+              date_range_picker_select_range "Last 7 Days"
+              click_on "Filter"
             end
 
             let(:total_inventory) { [@this_years_donations[:today], @this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
@@ -646,7 +582,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Month" do
             before do
-              page.select "This Month", from: "filters_interval"
+              date_range_picker_select_range "This Month"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -665,51 +602,10 @@ RSpec.describe "Dashboard", type: :system, js: true do
             end
           end
 
-          describe "Last Month" do
-            before do
-              page.select "Last Month", from: "filters_interval"
-            end
-
-            let(:total_inventory) { [@this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
-
-            it "has a widget displaying the Diaper drive totals from last month, only using donations from last month" do
-              within "#diaper_drives" do
-                expect(page).to have_content(/2 diaper drive/i)
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays some recent donations" do
-              within "#diaper_drives" do
-                expect(page).to have_css("a", text: /10\d from (first|second) diaper drive/i, count: 2)
-              end
-            end
-          end
-
-          describe "Last Year" do
-            before do
-              page.select "Last Year", from: "filters_interval"
-            end
-
-            let(:total_inventory) { @last_years_donations.map(&:total_quantity).sum }
-
-            it "has a widget displaying the Diaper drive totals from last year, only using donations from last year" do
-              within "#diaper_drives" do
-                expect(page).to have_content(total_inventory)
-                expect(page).to have_content(/1 diaper drive/i)
-              end
-            end
-
-            it "displays some recent donations from that time" do
-              within "#diaper_drives" do
-                expect(page).to have_css("a", text: /10\d from first diaper drive/i, count: 2)
-              end
-            end
-          end
-
           describe "All Time" do
             before do
-              page.select "All Time", from: "filters_interval"
+              date_range_picker_select_range "All Time"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum + @last_years_donations.map(&:total_quantity).sum }
@@ -803,7 +699,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Year" do
             before do
-              page.select "This Year", from: "filters_interval"
+              date_range_picker_select_range "This Year"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum }
@@ -827,7 +724,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Today" do
             before do
-              page.select "Today", from: "filters_interval"
+              date_range_picker_select_range "Today"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -848,7 +746,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "Yesterday" do
             before do
-              page.select "Yesterday", from: "filters_interval"
+              date_range_picker_select_range "Yesterday"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:yesterday].total_quantity }
@@ -869,7 +768,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Week" do
             before do
-              page.select "This Week", from: "filters_interval"
+              date_range_picker_select_range "Last 7 Days"
+              click_on "Filter"
             end
 
             let(:total_inventory) { [@this_years_donations[:today], @this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
@@ -892,7 +792,8 @@ RSpec.describe "Dashboard", type: :system, js: true do
 
           describe "This Month" do
             before do
-              page.select "This Month", from: "filters_interval"
+              date_range_picker_select_range "This Month"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations[:today].total_quantity }
@@ -911,55 +812,10 @@ RSpec.describe "Dashboard", type: :system, js: true do
             end
           end
 
-          describe "Last Month" do
-            before do
-              page.select "Last Month", from: "filters_interval"
-            end
-
-            let(:total_inventory) { [@this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:total_quantity).sum }
-            let(:manufacturers) { [@this_years_donations[:yesterday], @this_years_donations[:earlier_this_week]].map(&:manufacturer).map(&:name) }
-
-            it "has a widget displaying the Donation totals from last month, only using donations from last month" do
-              within "#manufacturers" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays the list of top manufacturers" do
-              within "#manufacturers" do
-                manufacturers.each do |manufacturer|
-                  expect(page).to have_css("a", text: /#{manufacturer} \(\d{3}\)/i, count: 1)
-                end
-              end
-            end
-          end
-
-          describe "Last Year" do
-            before do
-              page.select "Last Year", from: "filters_interval"
-            end
-
-            let(:total_inventory) { @last_years_donations.map(&:total_quantity).sum }
-            let(:manufacturers) { @last_years_donations.map(&:manufacturer).map(&:name) }
-
-            it "has a widget displaying the Donation totals from last year, only using donations from last year" do
-              within "#manufacturers" do
-                expect(page).to have_content(total_inventory)
-              end
-            end
-
-            it "displays the list of top manufacturers" do
-              within "#manufacturers" do
-                manufacturers.each do |manufacturer|
-                  expect(page).to have_css("a", text: /#{manufacturer} \(\d{3}\)/i, count: 1)
-                end
-              end
-            end
-          end
-
           describe "All Time" do
             before do
-              page.select "All Time", from: "filters_interval"
+              date_range_picker_select_range "All Time"
+              click_on "Filter"
             end
 
             let(:total_inventory) { @this_years_donations.values.map(&:total_quantity).sum + @last_years_donations.map(&:total_quantity).sum }
@@ -1040,174 +896,138 @@ RSpec.describe "Dashboard", type: :system, js: true do
           expect(page).to_not have_content("100 items distributed This Year")
         end
 
-        context "with year-to-date selected" do
-          before do
-            page.select "This Year", from: "filters_interval"
-          end
+        context "When Date Filtering >" do
+          context "with year-to-date selected" do
+            before do
+              date_range_picker_select_range "This Year"
+              click_on "Filter"
+            end
 
-          let(:total_inventory) { @this_years_distributions.values.map(&:line_items).flatten.map(&:quantity).sum }
-          let(:partners) { @this_years_distributions.values.map(&:partner).map(&:name) }
+            let(:total_inventory) { @this_years_distributions.values.map(&:line_items).flatten.map(&:quantity).sum }
+            let(:partners) { @this_years_distributions.values.map(&:partner).map(&:name) }
 
-          it "has a widget displaying the year-to-date distribution totals, only using distributions from this year" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
+            it "has a widget displaying the year-to-date distribution totals, only using distributions from this year" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
+            end
+
+            it "displays some recent distributions" do
+              within "#distributions" do
+                expect(page).to have_css("a", text: /1\d items.*(#{partners.join('|')})/i, count: 3)
+              end
             end
           end
 
-          it "displays some recent distributions" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*(#{partners.join('|')})/i, count: 3)
+          context "with today selected" do
+            before do
+              date_range_picker_select_range "Today"
+              click_on "Filter"
             end
-          end
-        end
 
-        context "with today selected" do
-          before do
-            page.select "Today", from: "filters_interval"
-          end
+            let(:total_inventory) { @this_years_distributions[:today].line_items.total }
+            let(:partner) { @this_years_distributions[:today].partner.name }
 
-          let(:total_inventory) { @this_years_distributions[:today].line_items.total }
-          let(:partner) { @this_years_distributions[:today].partner.name }
-
-          it "has a widget displaying today's distributions totals, only using distributions from today" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
+            it "has a widget displaying today's distributions totals, only using distributions from today" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
             end
-          end
 
-          it "displays some recent distributions" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
-            end
-          end
-        end
-
-        context "with yesterday selected" do
-          before do
-            page.select "Yesterday", from: "filters_interval"
-          end
-
-          let(:total_inventory) { @this_years_distributions[:yesterday].line_items.total }
-          let(:partner) { @this_years_distributions[:yesterday].partner.name }
-
-          it "has a widget displaying the distributions totals from yesterday, only using distributions from yesterday" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
-            end
-          end
-
-          it "displays some recent distributions" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
-            end
-          end
-        end
-
-        context "with this week selected" do
-          before do
-            page.select "This Week", from: "filters_interval"
-          end
-
-          let(:total_inventory) { [@this_years_distributions[:today], @this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:line_items).flatten.map(&:quantity).sum }
-          let(:partners) { [@this_years_distributions[:today], @this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:partner).map(&:name) }
-
-          it "has a widget displaying the distributions totals from this week, only using distributions from this week" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
-            end
-          end
-
-          it "displays some recent distributions" do
-            within "#distributions" do
-              partners.each do |partner|
+            it "displays some recent distributions" do
+              within "#distributions" do
                 expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
               end
             end
           end
-        end
 
-        context "with this month selected" do
-          before do
-            page.select "This Month", from: "filters_interval"
-          end
-
-          let(:total_inventory) { @this_years_distributions[:today].line_items.total }
-          let(:partner) { @this_years_distributions[:today].partner.name }
-
-          it "has a widget displaying the distributions totals from this month, only using distributions from this month" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
+          context "with yesterday selected" do
+            before do
+              date_range_picker_select_range "Yesterday"
+              click_on "Filter"
             end
-          end
 
-          it "displays some recent distributions" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
+            let(:total_inventory) { @this_years_distributions[:yesterday].line_items.total }
+            let(:partner) { @this_years_distributions[:yesterday].partner.name }
+
+            it "has a widget displaying the distributions totals from yesterday, only using distributions from yesterday" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
             end
-          end
-        end
 
-        context "with last month selected" do
-          before do
-            page.select "Last Month", from: "filters_interval"
-          end
-
-          let(:total_inventory) { [@this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:line_items).flatten.map(&:quantity).sum }
-          let(:partners) { [@this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:partner).map(&:name) }
-
-          it "has a widget displaying the distributions totals from last month, only using distributions from last month" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
-            end
-          end
-
-          it "displays some recent distributions" do
-            within "#distributions" do
-              partners.each do |partner|
+            it "displays some recent distributions" do
+              within "#distributions" do
                 expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
               end
             end
           end
-        end
 
-        context "with last year selected" do
-          before do
-            page.select "Last Year", from: "filters_interval"
-          end
+          context "with this week selected" do
+            before do
+              date_range_picker_select_range "Last 7 Days"
+              click_on "Filter"
+            end
 
-          let(:total_inventory) { @last_years_distributions.map(&:line_items).flatten.map(&:quantity).sum }
-          let(:partners) { @last_years_distributions.map(&:partner).map(&:name) }
+            let(:total_inventory) { [@this_years_distributions[:today], @this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:line_items).flatten.map(&:quantity).sum }
+            let(:partners) { [@this_years_distributions[:today], @this_years_distributions[:yesterday], @this_years_distributions[:earlier_this_week]].map(&:partner).map(&:name) }
 
-          it "has a widget displaying the distributions totals from last year, only using distributions from last year" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
+            it "has a widget displaying the distributions totals from this week, only using distributions from this week" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
+            end
+
+            it "displays some recent distributions" do
+              within "#distributions" do
+                partners.each do |partner|
+                  expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
+                end
+              end
             end
           end
 
-          it "displays some recent distributions from that time" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*(#{partners.join('|')})/i, count: 2)
+          context "with this month selected" do
+            before do
+              date_range_picker_select_range "This Month"
+              click_on "Filter"
+            end
+
+            let(:total_inventory) { @this_years_distributions[:today].line_items.total }
+            let(:partner) { @this_years_distributions[:today].partner.name }
+
+            it "has a widget displaying the distributions totals from this month, only using distributions from this month" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
+            end
+
+            it "displays some recent distributions" do
+              within "#distributions" do
+                expect(page).to have_css("a", text: /1\d items.*#{partner}/i, count: 1)
+              end
             end
           end
-        end
 
-        context "with All Time selected" do
-          before do
-            page.select "All Time", from: "filters_interval"
-          end
-
-          let(:total_inventory) { @this_years_distributions.values.map(&:line_items).flatten.map(&:quantity).sum + @last_years_distributions.map(&:line_items).flatten.map(&:quantity).sum }
-          let(:partners) { [@this_years_distributions.values + @last_years_distributions].flatten.map(&:partner).map(&:name) }
-
-          it "has a widget displaying the distributions totals from last year, only using distributions from last year" do
-            within "#distributions" do
-              expect(page).to have_content(total_inventory)
+          context "with All Time selected" do
+            before do
+              date_range_picker_select_range "All Time"
+              click_on "Filter"
             end
-          end
 
-          it "displays some recent distributions from that time" do
-            within "#distributions" do
-              expect(page).to have_css("a", text: /1\d items.*(#{partners.join('|')})/i, count: 3)
+            let(:total_inventory) { @this_years_distributions.values.map(&:line_items).flatten.map(&:quantity).sum + @last_years_distributions.map(&:line_items).flatten.map(&:quantity).sum }
+            let(:partners) { [@this_years_distributions.values + @last_years_distributions].flatten.map(&:partner).map(&:name) }
+
+            it "has a widget displaying the distributions totals from last year, only using distributions from last year" do
+              within "#distributions" do
+                expect(page).to have_content(total_inventory)
+              end
+            end
+
+            it "displays some recent distributions from that time" do
+              within "#distributions" do
+                expect(page).to have_css("a", text: /1\d items.*(#{partners.join('|')})/i, count: 3)
+              end
             end
           end
         end

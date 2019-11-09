@@ -21,17 +21,20 @@ class DistributionsController < ApplicationController
   end
 
   def destroy
-    ActiveRecord::Base.transaction do
-      distribution = current_organization.distributions.find(params[:id])
-      distribution.storage_location.increase_inventory(distribution)
-      distribution.destroy!
-    end
+    result = DistributionDestroyService.new(params[:id]).call
 
-    flash[:notice] = "Distribution #{params[:id]} has been reclaimed!"
-    redirect_to distributions_path
+    if result.success?
+      flash[:notice] = "Distribution #{params[:id]} has been reclaimed!"
+      redirect_to distributions_path
+    else
+      flash[:error] = "Could not destroy distribution #{params[:id]}. Please contact technical support."
+      redirect_to action: :edit
+    end
   end
 
   def index
+    setup_date_range_picker
+
     @highlight_id = session.delete(:created_distribution_id)
 
     @distributions = current_organization
@@ -40,6 +43,7 @@ class DistributionsController < ApplicationController
                      .includes(:partner, :storage_location, :line_items, :items)
                      .order(created_at: :desc)
                      .class_filter(filter_params)
+                     .during(helpers.selected_range)
     @paginated_distributions = @distributions.page(params[:page])
     @total_value_all_distributions = total_value(@distributions)
     @total_value_paginated_distributions = total_value(@paginated_distributions)
@@ -50,29 +54,20 @@ class DistributionsController < ApplicationController
   end
 
   def create
-    @distribution = Distribution.new(distribution_params.merge(organization: current_organization))
-    @storage_locations = current_organization.storage_locations
+    result = DistributionCreateService.new(distribution_params.merge(organization: current_organization), request_id).call
 
-    if @distribution.save
-      @distribution.storage_location.decrease_inventory @distribution
-      update_request(params[:distribution][:request_attributes], @distribution.id)
-      send_notification(current_organization.id, @distribution.id)
+    if result.success?
       flash[:notice] = "Distribution created!"
-      session[:created_distribution_id] = @distribution.id
-      redirect_to distributions_path
+      session[:created_distribution_id] = result.distribution.id
+      redirect_to(distributions_path) && return
     else
-      flash[:error] = "An error occurred, try again?"
-      logger.error "[!] DistributionsController#create failed to save distribution: #{@distribution.errors.full_messages}"
+      @distribution = result.distribution
+      flash[:error] = "Sorry, we weren't able to save the distribution. \n #{@distribution.errors.full_messages.join(', ')} #{result.error}"
       @distribution.line_items.build if @distribution.line_items.count.zero?
       @items = current_organization.items.alphabetized
       @storage_locations = current_organization.storage_locations.alphabetized
       render :new
     end
-  rescue Errors::InsufficientAllotment => ex
-    @storage_locations = current_organization.storage_locations
-    @items = current_organization.items.alphabetized
-    flash[:error] = ex.message
-    render :new
   end
 
   def new
@@ -100,24 +95,22 @@ class DistributionsController < ApplicationController
       @storage_locations = current_organization.storage_locations.alphabetized
     else
       flash[:error] = 'To edit a distribution,
-      you must be an organization admin or the current date must be major then today.'
+      you must be an organization admin or the current date must be later than today.'
       redirect_to distributions_path
     end
   end
 
   def update
-    distribution = Distribution.includes(:line_items).includes(:storage_location).find(params[:id])
+    old_distribution = Distribution.includes(:line_items).includes(:storage_location).find(params[:id])
 
-    # there are ways to convert issued_at(*i) to Date but they are uglier then just remember it here
-    # see examples: https://stackoverflow.com/questions/13605598/how-to-get-a-date-from-date-select-or-select-date-in-rails
-    old_issued_at = distribution.issued_at
+    result = DistributionUpdateService.new(old_distribution, distribution_params).call
 
-    if distribution.replace_distribution!(distribution_params)
+    if result.success?
       @distribution = Distribution.includes(:line_items).includes(:storage_location).find(params[:id])
       @line_items = @distribution.line_items
 
-      if distribution.issued_at.to_date != old_issued_at.to_date
-        send_notification(current_organization.id, @distribution.id, subject: "Your Distribution New Schedule Date is #{distribution.issued_at}")
+      if result.resend_notification?
+        send_notification(current_organization.id, @distribution.id, subject: "Your Distribution New Schedule Date is #{@distribution.issued_at}")
       end
 
       schedule_reminder_email(@distribution.id)
@@ -175,8 +168,12 @@ class DistributionsController < ApplicationController
     params.require(:distribution).permit(:comment, :agency_rep, :issued_at, :partner_id, :storage_location_id, :reminder_email_enabled, line_items_attributes: %i(item_id quantity _destroy))
   end
 
+  def request_id
+    params.dig(:distribution, :request_attributes, :id)
+  end
+
   def total_items(distributions)
-    distributions.includes(:line_items).sum('line_items.quantity')
+    LineItem.where(itemizable_type: "Distribution", itemizable_id: distributions.pluck(:id)).sum('quantity')
   end
 
   def total_value(distributions)
